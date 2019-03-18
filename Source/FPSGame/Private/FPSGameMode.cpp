@@ -14,3 +14,12 @@ AFPSGameMode::AFPSGameMode()
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
 }
+
+void AFPSGameMode::CompleteMission(APawn * Investigator)
+{
+	if (Investigator) {
+		Investigator->DisableInput(nullptr);
+		
+	}
+	OnMissionCompleted(Investigator);
+}

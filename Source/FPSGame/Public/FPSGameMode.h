@@ -12,8 +12,13 @@ class AFPSGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-
 	AFPSGameMode();
+
+	void CompleteMission(APawn* Investigator);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
+	void OnMissionCompleted(APawn* Investigator);
+
 };
 
 
