@@ -29,7 +29,7 @@ AFPSObjectiveActor::AFPSObjectiveActor()
 void AFPSObjectiveActor::BeginPlay()
 {
 	Super::BeginPlay();
-	//PlayParticleEffects();
+	PlayParticleEffects();
 }
 
 

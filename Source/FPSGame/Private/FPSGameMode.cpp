@@ -4,6 +4,7 @@
 #include "FPSHUD.h"
 #include "FPSCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 AFPSGameMode::AFPSGameMode()
 {
@@ -19,7 +20,27 @@ void AFPSGameMode::CompleteMission(APawn * Investigator)
 {
 	if (Investigator) {
 		Investigator->DisableInput(nullptr);
+
+		if (viewPointClass) {
+			TArray<AActor*> viewActors;
+			UGameplayStatics::GetAllActorsOfClass(this, viewPointClass, viewActors);
+
+			if (viewActors.Num() > 0) {
+
+				AActor* viewActor = viewActors[0];
+				APlayerController* aPlayerController = Cast<APlayerController>(Investigator->GetController());
+				if (aPlayerController) {
+					aPlayerController->SetViewTargetWithBlend(viewActor, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+				}
+			}
+		}
+		else{
+			UE_LOG(LogTemp, Warning, TEXT("No view point class specified!"));
+		}
 		
 	}
+
+
+
 	OnMissionCompleted(Investigator);
 }
