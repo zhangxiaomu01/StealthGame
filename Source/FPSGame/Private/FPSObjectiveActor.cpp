@@ -56,6 +56,6 @@ void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor * OtherActor)
 void AFPSObjectiveActor::PlayParticleEffects()
 {
 	UGameplayStatics::SpawnEmitterAtLocation(this, pickupParticle, GetActorLocation());
-	
+
 }
 
