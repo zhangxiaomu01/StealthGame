@@ -48,7 +48,7 @@ void AFPSAIGuard::OnHeardPawn(APawn * noiseInstigator, const FVector & Location,
 	AIRotator.Roll = 0.0f;
 
 	SetActorRotation(AIRotator);
-
+	//Set timer
 	GetWorldTimerManager().ClearTimer(guardDistractionTimerHandle);
 	GetWorldTimerManager().SetTimer(guardDistractionTimerHandle, this, &AFPSAIGuard::ResetOrientation, 3.0f);
 
