@@ -5,6 +5,7 @@
 #include "DrawDebugHelpers.h"
 
 
+
 // Sets default values
 AFPSAIGuard::AFPSAIGuard()
 {
@@ -14,6 +15,7 @@ AFPSAIGuard::AFPSAIGuard()
 	sensingComp->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnSeenPawn);
 	sensingComp->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnHeardPawn);
 
+	originalRot = GetActorRotation();
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +38,25 @@ void AFPSAIGuard::OnHeardPawn(APawn * noiseInstigator, const FVector & Location,
 	if (!noiseInstigator)
 		return;
 	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Blue, false, 5.0f);
+
+	//Guard Dsitraction Behavior
+	FVector soundDir = Location - GetActorLocation();
+	soundDir.Normalize();
+
+	FRotator AIRotator = FRotationMatrix::MakeFromX(soundDir).Rotator();
+	AIRotator.Pitch = 0.0f;
+	AIRotator.Roll = 0.0f;
+
+	SetActorRotation(AIRotator);
+
+	GetWorldTimerManager().ClearTimer(guardDistractionTimerHandle);
+	GetWorldTimerManager().SetTimer(guardDistractionTimerHandle, this, &AFPSAIGuard::ResetOrientation, 3.0f);
+
+}
+
+void AFPSAIGuard::ResetOrientation()
+{
+	SetActorRotation(originalRot);
 }
 
 // Called every frame
