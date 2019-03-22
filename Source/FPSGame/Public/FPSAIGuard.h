@@ -24,6 +24,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "SensingComp")
 	UPawnSensingComponent* sensingComp;
 
+	UFUNCTION()
+	void OnSeenPawn(APawn* seenPawn);
+
+	UFUNCTION()
+	void OnHeardPawn(APawn* noiseInstigator, const FVector& Location, float Volume);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
