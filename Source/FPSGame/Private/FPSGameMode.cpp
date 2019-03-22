@@ -16,7 +16,7 @@ AFPSGameMode::AFPSGameMode()
 	HUDClass = AFPSHUD::StaticClass();
 }
 
-void AFPSGameMode::CompleteMission(APawn * Investigator)
+void AFPSGameMode::CompleteMission(APawn * Investigator, bool isMissionSuccess)
 {
 	if (Investigator) {
 		Investigator->DisableInput(nullptr);
@@ -42,5 +42,5 @@ void AFPSGameMode::CompleteMission(APawn * Investigator)
 
 
 
-	OnMissionCompleted(Investigator);
+	OnMissionCompleted(Investigator, isMissionSuccess);
 }

@@ -3,6 +3,7 @@
 #include "FPSAIGuard.h"
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
+#include "FPSGameMode.h"
 
 
 
@@ -14,15 +15,15 @@ AFPSAIGuard::AFPSAIGuard()
 	sensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("SensingComp"));
 	sensingComp->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnSeenPawn);
 	sensingComp->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnHeardPawn);
-
-	originalRot = GetActorRotation();
+	
+	AIState = EAIState::Idle;
 }
 
 // Called when the game starts or when spawned
 void AFPSAIGuard::BeginPlay()
 {
 	Super::BeginPlay();
-
+	originalRot = GetActorRotation();
 }
 
 void AFPSAIGuard::OnSeenPawn(APawn * seenPawn)
@@ -31,10 +32,18 @@ void AFPSAIGuard::OnSeenPawn(APawn * seenPawn)
 		return;
 	}
 	DrawDebugSphere(GetWorld(), seenPawn->GetActorLocation(), 32.0f, 12, FColor::Red, false, 5.0f);
+	AFPSGameMode* myGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+	if (myGameMode) {
+		myGameMode->CompleteMission(seenPawn, false);
+	}
+	SetAIState(EAIState::Alerted);
 }
 
 void AFPSAIGuard::OnHeardPawn(APawn * noiseInstigator, const FVector & Location, float Volume)
 {
+	if (AIState == EAIState::Alerted)
+		return;
+
 	if (!noiseInstigator)
 		return;
 	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Blue, false, 5.0f);
@@ -52,12 +61,28 @@ void AFPSAIGuard::OnHeardPawn(APawn * noiseInstigator, const FVector & Location,
 	GetWorldTimerManager().ClearTimer(guardDistractionTimerHandle);
 	GetWorldTimerManager().SetTimer(guardDistractionTimerHandle, this, &AFPSAIGuard::ResetOrientation, 3.0f);
 
+	SetAIState(EAIState::Suspicious);
 }
 
 void AFPSAIGuard::ResetOrientation()
 {
+	if (AIState == EAIState::Alerted)
+		return;
 	SetActorRotation(originalRot);
+	SetAIState( EAIState::Idle);
 }
+
+void AFPSAIGuard::SetAIState(EAIState newState)
+{
+	if (AIState == newState)
+		return;
+
+	AIState = newState;
+
+	StateChanged(newState);
+}
+
+
 
 // Called every frame
 void AFPSAIGuard::Tick(float DeltaTime)

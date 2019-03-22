@@ -8,6 +8,15 @@
 
 class UPawnSensingComponent;
 
+//UENUM can only work with uint8 type
+//Make sure to expose this first
+UENUM(BlueprintType)
+enum class EAIState : uint8 {
+	Idle,
+	Suspicious,
+	Alerted
+};
+
 UCLASS()
 class FPSGAME_API AFPSAIGuard : public ACharacter
 {
@@ -36,6 +45,12 @@ protected:
 	FRotator originalRot;
 
 	FTimerHandle guardDistractionTimerHandle;
+
+	EAIState AIState;
+	void SetAIState(EAIState newState);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
+	void StateChanged(EAIState newState);
 
 public:	
 	// Called every frame

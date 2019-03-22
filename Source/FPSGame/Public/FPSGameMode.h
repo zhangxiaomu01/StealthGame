@@ -18,10 +18,10 @@ protected:
 public:
 	AFPSGameMode();
 
-	void CompleteMission(APawn* Investigator);
+	void CompleteMission(APawn* Investigator, bool isMissionSuccess);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
-	void OnMissionCompleted(APawn* Investigator);
+	void OnMissionCompleted(APawn* Investigator, bool isMissionSuccess);
 
 };
 
