@@ -33,6 +33,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "SensingComp")
 	UPawnSensingComponent* sensingComp;
 
+	UPROPERTY(EditorInstanceOnly, Category = "AI")
+	bool isPatrol;
+
+
 	UFUNCTION()
 	void OnSeenPawn(APawn* seenPawn);
 
@@ -42,15 +46,15 @@ protected:
 	UFUNCTION()
 	void ResetOrientation();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
+	void StateChanged(EAIState newState);
+
 	FRotator originalRot;
 
 	FTimerHandle guardDistractionTimerHandle;
 
 	EAIState AIState;
 	void SetAIState(EAIState newState);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
-	void StateChanged(EAIState newState);
 
 public:	
 	// Called every frame
