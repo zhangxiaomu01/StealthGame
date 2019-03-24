@@ -32,6 +32,7 @@ void AFPSAIGuard::OnSeenPawn(APawn * seenPawn)
 		return;
 	}
 	DrawDebugSphere(GetWorld(), seenPawn->GetActorLocation(), 32.0f, 12, FColor::Red, false, 5.0f);
+	
 	AFPSGameMode* myGameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 	if (myGameMode) {
 		myGameMode->CompleteMission(seenPawn, false);
