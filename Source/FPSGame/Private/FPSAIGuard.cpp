@@ -4,7 +4,8 @@
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
 #include "FPSGameMode.h"
-
+#include "AI/Navigation/NavigationSystem.h"
+#include "DebugMessage.h"
 
 
 // Sets default values
@@ -24,6 +25,11 @@ void AFPSAIGuard::BeginPlay()
 {
 	Super::BeginPlay();
 	originalRot = GetActorRotation();
+
+	if (isPatrol) {
+		MoveToNextPatrolPoint();
+	}
+
 }
 
 void AFPSAIGuard::OnSeenPawn(APawn * seenPawn)
@@ -38,6 +44,12 @@ void AFPSAIGuard::OnSeenPawn(APawn * seenPawn)
 		myGameMode->CompleteMission(seenPawn, false);
 	}
 	SetAIState(EAIState::Alerted);
+
+	AController* AIController = GetController();
+	if (AIController) {
+		AIController->StopMovement();
+	}
+
 }
 
 void AFPSAIGuard::OnHeardPawn(APawn * noiseInstigator, const FVector & Location, float Volume)
@@ -63,6 +75,11 @@ void AFPSAIGuard::OnHeardPawn(APawn * noiseInstigator, const FVector & Location,
 	GetWorldTimerManager().SetTimer(guardDistractionTimerHandle, this, &AFPSAIGuard::ResetOrientation, 3.0f);
 
 	SetAIState(EAIState::Suspicious);
+
+	AController* AIController = GetController();
+	if (AIController) {
+		AIController->StopMovement();
+	}
 }
 
 void AFPSAIGuard::ResetOrientation()
@@ -71,6 +88,23 @@ void AFPSAIGuard::ResetOrientation()
 		return;
 	SetActorRotation(originalRot);
 	SetAIState( EAIState::Idle);
+
+	if (isPatrol) {
+		MoveToNextPatrolPoint();
+	}
+
+}
+
+void AFPSAIGuard::MoveToNextPatrolPoint()
+{
+	if (patrolPoints.Num() < 2)
+		return;
+	if (currentPatrolPoint == nullptr || currentPatrolPoint == patrolPoints[1])
+		currentPatrolPoint = patrolPoints[0];
+	else if(currentPatrolPoint == patrolPoints[0])
+		currentPatrolPoint = patrolPoints[1];
+
+	UNavigationSystem::SimpleMoveToActor(GetController(), currentPatrolPoint);
 }
 
 void AFPSAIGuard::SetAIState(EAIState newState)
@@ -89,6 +123,18 @@ void AFPSAIGuard::SetAIState(EAIState newState)
 void AFPSAIGuard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//Set patrol behavior, just wokring between two points
+	if (currentPatrolPoint) {
+		FVector deltaLoc = GetActorLocation() - currentPatrolPoint->GetActorLocation();
+		float distance = deltaLoc.Size();
+		//DebugMessage("Test %f", distance);
+		if (distance < 80) {
+			MoveToNextPatrolPoint();
+			
+		}
+	}
+	
 
 }
 

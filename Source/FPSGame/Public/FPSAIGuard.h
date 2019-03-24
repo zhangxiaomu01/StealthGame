@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "FPSAIGuard.generated.h"
 
+
 class UPawnSensingComponent;
 
 //UENUM can only work with uint8 type
@@ -33,9 +34,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "SensingComp")
 	UPawnSensingComponent* sensingComp;
 
-	UPROPERTY(EditorInstanceOnly, Category = "AI")
+	UPROPERTY(EditInstanceOnly, Category = "AI")
 	bool isPatrol;
 
+	UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = isPatrol))
+	TArray<AActor*> patrolPoints;
 
 	UFUNCTION()
 	void OnSeenPawn(APawn* seenPawn);
@@ -54,6 +57,11 @@ protected:
 	FTimerHandle guardDistractionTimerHandle;
 
 	EAIState AIState;
+
+	AActor* currentPatrolPoint;
+
+	void MoveToNextPatrolPoint();
+
 	void SetAIState(EAIState newState);
 
 public:	
