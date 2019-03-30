@@ -22,7 +22,8 @@ AFPSObjectiveActor::AFPSObjectiveActor()
 	sphereComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	sphereComp->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	sphereComp->SetupAttachment(meshComp);
-	
+
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
@@ -45,10 +46,12 @@ void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor * OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	PlayParticleEffects();
 
-	AFPSCharacter* fpsCharacter = Cast<AFPSCharacter>(OtherActor);
-	if (fpsCharacter) {
-		fpsCharacter->isPickedup = true;
-		this->Destroy();
+	if (Role == ROLE_Authority) {
+		AFPSCharacter* fpsCharacter = Cast<AFPSCharacter>(OtherActor);
+		if (fpsCharacter) {
+			fpsCharacter->isPickedup = true;
+			this->Destroy();
+		}
 	}
 
 }
