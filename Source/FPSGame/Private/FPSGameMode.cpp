@@ -1,10 +1,15 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
+
 #include "FPSGameMode.h"
 #include "FPSHUD.h"
 #include "FPSCharacter.h"
+#include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "FPSGameState.h"
+#include "FPSPlayerController.h"
+
 
 AFPSGameMode::AFPSGameMode()
 {
@@ -14,12 +19,14 @@ AFPSGameMode::AFPSGameMode()
 	
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
+
+	GameStateClass = AFPSGameState::StaticClass();
 }
 
 void AFPSGameMode::CompleteMission(APawn * Investigator, bool isMissionSuccess)
 {
 	if (Investigator) {
-		Investigator->DisableInput(nullptr);
+		//Investigator->DisableInput(nullptr);
 
 		if (viewPointClass) {
 			TArray<AActor*> viewActors;
@@ -28,10 +35,14 @@ void AFPSGameMode::CompleteMission(APawn * Investigator, bool isMissionSuccess)
 			if (viewActors.Num() > 0) {
 
 				AActor* viewActor = viewActors[0];
-				APlayerController* aPlayerController = Cast<APlayerController>(Investigator->GetController());
-				if (aPlayerController) {
-					aPlayerController->SetViewTargetWithBlend(viewActor, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+
+				for (FConstPlayerControllerIterator it = GetWorld()->GetPlayerControllerIterator(); it; it++) {
+					AFPSPlayerController* aPlayerController = Cast<AFPSPlayerController>(it->Get());
+					if (aPlayerController) {
+						aPlayerController->SetViewTargetWithBlend(viewActor, 0.5f, EViewTargetBlendFunction::VTBlend_Cubic);
+					}
 				}
+
 			}
 		}
 		else{
@@ -40,5 +51,10 @@ void AFPSGameMode::CompleteMission(APawn * Investigator, bool isMissionSuccess)
 		
 	}
 
-	OnMissionCompleted(Investigator, isMissionSuccess);
+	//Handles disable input for all clients
+	AFPSGameState* GS = GetGameState<AFPSGameState>();
+	if (GS) {
+		GS->MulticastOnMissionCompleted(Investigator, isMissionSuccess);
+	}
+
 }

@@ -1,5 +1,5 @@
 // Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
-
+//This class only runs in server
 #pragma once
 
 #include "CoreMinimal.h"
@@ -19,9 +19,6 @@ public:
 	AFPSGameMode();
 
 	void CompleteMission(APawn* Investigator, bool isMissionSuccess);
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "GameMode")
-	void OnMissionCompleted(APawn* Investigator, bool isMissionSuccess);
 
 };
 
