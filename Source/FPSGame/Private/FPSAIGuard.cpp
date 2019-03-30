@@ -6,6 +6,7 @@
 #include "FPSGameMode.h"
 #include "AI/Navigation/NavigationSystem.h"
 #include "DebugMessage.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -95,6 +96,8 @@ void AFPSAIGuard::ResetOrientation()
 
 }
 
+
+
 void AFPSAIGuard::MoveToNextPatrolPoint()
 {
 	if (patrolPoints.Num() < 2)
@@ -107,6 +110,11 @@ void AFPSAIGuard::MoveToNextPatrolPoint()
 	UNavigationSystem::SimpleMoveToActor(GetController(), currentPatrolPoint);
 }
 
+void AFPSAIGuard::OnRep_GuardState()
+{
+	StateChanged(AIState);
+}
+
 void AFPSAIGuard::SetAIState(EAIState newState)
 {
 	if (AIState == newState)
@@ -114,9 +122,16 @@ void AFPSAIGuard::SetAIState(EAIState newState)
 
 	AIState = newState;
 
-	StateChanged(newState);
+	OnRep_GuardState();
 }
 
+//Without this, seems we will get an error
+void AFPSAIGuard::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFPSAIGuard, AIState);
+}
 
 
 // Called every frame

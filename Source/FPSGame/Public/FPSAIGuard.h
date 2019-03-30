@@ -52,11 +52,15 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "AI")
 	void StateChanged(EAIState newState);
 
+	UPROPERTY(ReplicatedUsing = OnRep_GuardState)
+	EAIState AIState;
+
+	UFUNCTION()
+	void OnRep_GuardState();
+
 	FRotator originalRot;
 
 	FTimerHandle guardDistractionTimerHandle;
-
-	EAIState AIState;
 
 	AActor* currentPatrolPoint;
 

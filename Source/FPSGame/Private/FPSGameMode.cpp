@@ -40,7 +40,5 @@ void AFPSGameMode::CompleteMission(APawn * Investigator, bool isMissionSuccess)
 		
 	}
 
-
-
 	OnMissionCompleted(Investigator, isMissionSuccess);
 }

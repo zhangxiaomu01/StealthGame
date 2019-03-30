@@ -52,7 +52,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
 	UAnimSequence* FireAnimation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Gameplay")
 	bool isPickedup;
 
 protected:
@@ -69,6 +69,8 @@ protected:
 
 	/** Handles strafing movement, left and right */
 	void MoveRight(float Val);
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
